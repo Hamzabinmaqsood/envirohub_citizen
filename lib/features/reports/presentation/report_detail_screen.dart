@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/config/api_config.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/location_map_card.dart';
 import '../data/report_repository.dart';
 import '../models/report.dart';
 
@@ -19,11 +20,20 @@ class ReportDetailScreen extends StatelessWidget {
       body: FutureBuilder<ReportDetail>(
         future: repository.getReport(reportId),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
-          if (snapshot.hasError) return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(readableApiError(snapshot.error!))));
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(readableApiError(snapshot.error!)),
+              ),
+            );
+          }
           final report = snapshot.data!;
-          final before = report.images.where((e) => e.type == 'BEFORE').toList();
-          final after = report.images.where((e) => e.type == 'AFTER').toList();
+          final before = report.images.where((image) => image.type == 'BEFORE').toList();
+          final after = report.images.where((image) => image.type == 'AFTER').toList();
 
           return ListView(
             padding: const EdgeInsets.all(18),
@@ -31,7 +41,12 @@ class ReportDetailScreen extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: Text(report.categoryName, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800))),
+                  Expanded(
+                    child: Text(
+                      report.categoryName,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                  ),
                   Chip(label: Text(friendlyStatus(report.status))),
                 ],
               ),
@@ -46,10 +61,21 @@ class ReportDetailScreen extends StatelessWidget {
                     children: [
                       _InfoRow(icon: Icons.schedule, text: 'Submitted ${formatDateTime(report.createdAt)}'),
                       const SizedBox(height: 8),
-                      _InfoRow(icon: Icons.location_on_outlined, text: report.address.isEmpty ? '${report.latitude}, ${report.longitude}' : report.address),
+                      _InfoRow(
+                        icon: Icons.location_on_outlined,
+                        text: report.address.isEmpty
+                            ? '${report.latitude}, ${report.longitude}'
+                            : report.address,
+                      ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 12),
+              LocationMapCard(
+                latitude: report.latitude,
+                longitude: report.longitude,
+                address: report.address,
               ),
               const SizedBox(height: 22),
               _ImageSection(title: 'Before', images: before),
@@ -58,11 +84,12 @@ class ReportDetailScreen extends StatelessWidget {
                 _ImageSection(title: 'After / resolution proof', images: after),
               ],
               const SizedBox(height: 24),
-              Text('Status timeline', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
-              const SizedBox(height: 12),
-              ...report.timeline.map(
-                (item) => _TimelineTile(item: item),
+              Text(
+                'Status timeline',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
               ),
+              const SizedBox(height: 12),
+              ...report.timeline.map((item) => _TimelineTile(item: item)),
             ],
           );
         },
@@ -101,7 +128,11 @@ class _ImageSection extends StatelessWidget {
                     width: 220,
                     height: 180,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(width: 220, color: Theme.of(context).colorScheme.surfaceContainerHighest, child: const Icon(Icons.broken_image_outlined)),
+                    errorBuilder: (_, _, _) => Container(
+                      width: 220,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      child: const Icon(Icons.broken_image_outlined),
+                    ),
                   ),
                 );
               },
@@ -126,7 +157,10 @@ class _TimelineTile extends StatelessWidget {
           Container(
             width: 34,
             height: 34,
-            decoration: BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
             child: const Icon(Icons.check_rounded, size: 18),
           ),
           const SizedBox(width: 12),
@@ -156,6 +190,12 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [Icon(icon, size: 20), const SizedBox(width: 8), Expanded(child: Text(text))]);
+    return Row(
+      children: [
+        Icon(icon, size: 20),
+        const SizedBox(width: 8),
+        Expanded(child: Text(text)),
+      ],
+    );
   }
 }

@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/config/api_config.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/location_map_card.dart';
 import '../data/worker_repository.dart';
 import '../models/worker_report.dart';
 
@@ -212,6 +213,14 @@ class _WorkerJobDetailScreenState extends State<WorkerJobDetailScreen> {
                 ],
               ),
             ),
+          ),
+          const SizedBox(height: 12),
+          LocationMapCard(
+            latitude: report.latitude,
+            longitude: report.longitude,
+            title: 'Job location',
+            address: report.address,
+            showDirections: true,
           ),
           const SizedBox(height: 18),
           Text('Issue description', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),

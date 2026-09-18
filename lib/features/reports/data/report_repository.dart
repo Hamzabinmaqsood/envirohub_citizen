@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../core/network/api_client.dart';
 import '../models/category.dart';
+import '../models/nearby_report.dart';
 import '../models/report.dart';
 
 class ReportRepository {
@@ -37,6 +38,27 @@ class ReportRepository {
   Future<ReportDetail> getReport(String id) async {
     final response = await _client.dio.get<Map<String, dynamic>>('reports/$id/');
     return ReportDetail.fromJson(response.data ?? const {});
+  }
+
+  Future<List<NearbyReport>> getNearbyReports({
+    required double latitude,
+    required double longitude,
+    int radiusM = 200,
+    String? categorySlug,
+  }) async {
+    final response = await _client.dio.get<List<dynamic>>(
+      'reports/nearby/',
+      queryParameters: {
+        'latitude': latitude,
+        'longitude': longitude,
+        'radius_m': radiusM,
+        if (categorySlug != null && categorySlug.isNotEmpty) 'category': categorySlug,
+      },
+    );
+    return (response.data ?? const [])
+        .whereType<Map>()
+        .map((item) => NearbyReport.fromJson(item.cast<String, dynamic>()))
+        .toList();
   }
 
   Future<ReportDetail> createReport({
