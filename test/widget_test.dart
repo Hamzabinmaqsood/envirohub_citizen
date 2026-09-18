@@ -1,30 +1,34 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:envirohub_citizen/features/auth/models/app_user.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:envirohub_citizen/main.dart';
-
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('AppUser', () {
+    test('parses a worker and exposes role helpers', () {
+      final user = AppUser.fromJson({
+        'id': 7,
+        'email': 'worker@example.com',
+        'name': 'Worker One',
+        'phone': '03000000000',
+        'role': 'worker',
+      });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(user.id, 7);
+      expect(user.name, 'Worker One');
+      expect(user.role, 'WORKER');
+      expect(user.isWorker, isTrue);
+      expect(user.isCitizen, isFalse);
+      expect(user.isAuthority, isFalse);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('falls back to email when name is missing', () {
+      final user = AppUser.fromJson({
+        'id': 1,
+        'email': 'authority@example.com',
+        'role': 'AUTHORITY',
+      });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      expect(user.name, 'authority@example.com');
+      expect(user.isAuthority, isTrue);
+    });
   });
 }
