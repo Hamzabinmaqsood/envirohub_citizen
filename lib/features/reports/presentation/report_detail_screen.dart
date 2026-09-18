@@ -91,7 +91,7 @@ class _ImageSection extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
               itemBuilder: (context, index) {
                 final url = ApiConfig.resolveMediaUrl(images[index].url);
                 return ClipRRect(
@@ -101,7 +101,7 @@ class _ImageSection extends StatelessWidget {
                     width: 220,
                     height: 180,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(width: 220, color: Theme.of(context).colorScheme.surfaceContainerHighest, child: const Icon(Icons.broken_image_outlined)),
+                    errorBuilder: (_, _, _) => Container(width: 220, color: Theme.of(context).colorScheme.surfaceContainerHighest, child: const Icon(Icons.broken_image_outlined)),
                   ),
                 );
               },

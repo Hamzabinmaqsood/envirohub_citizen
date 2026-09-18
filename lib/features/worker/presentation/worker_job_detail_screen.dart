@@ -396,7 +396,7 @@ class _ImageStrip extends StatelessWidget {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              separatorBuilder: (_, _) => const SizedBox(width: 10),
               itemBuilder: (context, index) {
                 final url = ApiConfig.resolveMediaUrl(images[index].url);
                 return ClipRRect(
@@ -406,7 +406,7 @@ class _ImageStrip extends StatelessWidget {
                     width: 220,
                     height: 180,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       width: 220,
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       child: const Icon(Icons.broken_image_outlined),

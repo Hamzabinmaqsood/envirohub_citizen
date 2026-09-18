@@ -156,7 +156,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: _images.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 10),
+                          separatorBuilder: (_, _) => const SizedBox(width: 10),
                           itemBuilder: (context, index) => Stack(
                             children: [
                               ClipRRect(

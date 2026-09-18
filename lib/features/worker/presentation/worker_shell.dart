@@ -198,7 +198,7 @@ class _WorkerJobsPageState extends State<_WorkerJobsPage> {
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: _jobs.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, index) => _WorkerJobCard(
           report: _jobs[index],
           onTap: () => _openJob(_jobs[index]),
@@ -241,7 +241,7 @@ class _WorkerJobCard extends StatelessWidget {
                         width: 84,
                         height: 84,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (_, _, _) => Container(
                           width: 84,
                           height: 84,
                           color: Theme.of(context).colorScheme.surfaceContainerHighest,

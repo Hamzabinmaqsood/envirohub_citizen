@@ -62,7 +62,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: reports.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final report = reports[index];
               final imageUrl = ApiConfig.resolveMediaUrl(report.thumbnail);
@@ -84,7 +84,7 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
                           borderRadius: BorderRadius.circular(12),
                           child: imageUrl.isEmpty
                               ? Container(width: 82, height: 82, color: Theme.of(context).colorScheme.surfaceContainerHighest, child: const Icon(Icons.image_outlined))
-                              : Image.network(imageUrl, width: 82, height: 82, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox(width: 82, height: 82, child: Icon(Icons.broken_image_outlined))),
+                              : Image.network(imageUrl, width: 82, height: 82, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox(width: 82, height: 82, child: Icon(Icons.broken_image_outlined))),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
