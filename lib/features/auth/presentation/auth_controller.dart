@@ -1,20 +1,32 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/services/push_notification_service.dart';
 import '../data/auth_repository.dart';
 import '../models/app_user.dart';
 
 enum AuthStatus { checking, authenticated, unauthenticated }
 
 class AuthController extends ChangeNotifier {
-  AuthController(this._repository);
+  AuthController(
+    this._repository, {
+    PushNotificationService? pushNotifications,
+  }) : _pushNotifications = pushNotifications;
 
   final AuthRepository _repository;
+  final PushNotificationService? _pushNotifications;
 
   AuthStatus status = AuthStatus.checking;
   AppUser? user;
   String? error;
   bool busy = false;
+
+  void _syncPushInBackground() {
+    final service = _pushNotifications;
+    if (service != null) unawaited(service.syncCurrentInstallation());
+  }
 
   Future<void> bootstrap() async {
     status = AuthStatus.checking;
@@ -26,6 +38,7 @@ class AuthController extends ChangeNotifier {
     try {
       user = await _repository.me();
       status = AuthStatus.authenticated;
+      _syncPushInBackground();
     } catch (_) {
       await _repository.clearSession();
       status = AuthStatus.unauthenticated;
@@ -37,6 +50,7 @@ class AuthController extends ChangeNotifier {
     return _run(() async {
       user = await _repository.login(email: email, password: password);
       status = AuthStatus.authenticated;
+      _syncPushInBackground();
     });
   }
 
@@ -54,6 +68,7 @@ class AuthController extends ChangeNotifier {
         password: password,
       );
       status = AuthStatus.authenticated;
+      _syncPushInBackground();
     });
   }
 
@@ -61,6 +76,8 @@ class AuthController extends ChangeNotifier {
     busy = true;
     notifyListeners();
     try {
+      // Unregister while the access token is still available.
+      await _pushNotifications?.unregisterCurrentInstallation();
       await _repository.logout();
     } finally {
       user = null;

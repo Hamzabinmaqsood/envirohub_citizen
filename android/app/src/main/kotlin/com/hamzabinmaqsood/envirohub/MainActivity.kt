@@ -1,5 +1,6 @@
-package com.example.envirohub_citizen
+package com.hamzabinmaqsood.envirohub
 
 import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : FlutterActivity()
+
