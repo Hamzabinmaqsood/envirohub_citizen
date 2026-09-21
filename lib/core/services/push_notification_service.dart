@@ -8,6 +8,16 @@ import 'package:flutter/foundation.dart';
 import '../../firebase_options.dart';
 import '../network/api_client.dart';
 
+// Android runs this on a background isolate for data/mixed FCM messages.
+// Notification-only payloads are displayed by Android; do not display a
+// second local notification here.
+@pragma('vm:entry-point')
+Future<void> enviroHubFirebaseBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+}
+
 class PushNotificationService {
   PushNotificationService(this._apiClient);
 
@@ -23,6 +33,9 @@ class PushNotificationService {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       ).timeout(const Duration(seconds: 30));
+      if (!kIsWeb) {
+        FirebaseMessaging.onBackgroundMessage(enviroHubFirebaseBackgroundHandler);
+      }
       _firebaseReady = true;
       debugPrint('EnviroHub: Firebase initialized successfully');
       _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh.listen(

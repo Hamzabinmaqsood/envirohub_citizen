@@ -76,9 +76,21 @@ class AuthController extends ChangeNotifier {
     busy = true;
     notifyListeners();
     try {
-      // Unregister while the access token is still available.
-      await _pushNotifications?.unregisterCurrentInstallation();
+      // Unregister while the access token is still available. Remote cleanup
+      // must not prevent local logout if Firebase or the API is unavailable.
+      try {
+        await _pushNotifications?.unregisterCurrentInstallation();
+      } catch (error) {
+        debugPrint('EnviroHub: Push unregister skipped: $error');
+      }
       await _repository.logout();
+    } catch (error) {
+      debugPrint('EnviroHub: Logout cleanup failed: $error');
+      try {
+        await _repository.clearSession();
+      } catch (clearError) {
+        debugPrint('EnviroHub: Local session cleanup failed: $clearError');
+      }
     } finally {
       user = null;
       error = null;

@@ -1,3 +1,6 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+
 import '../../../core/network/api_client.dart';
 import '../../../core/storage/token_storage.dart';
 import '../models/app_user.dart';
@@ -50,11 +53,18 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
-    final refresh = await _storage.readRefreshToken();
     try {
+      final refresh = await _storage.readRefreshToken();
       if (refresh != null && refresh.isNotEmpty) {
         await _client.dio.post<dynamic>('auth/logout/', data: {'refresh': refresh});
       }
+    } on DioException catch (error) {
+      // A 401 (or an offline server) must not trap the user in a local session.
+      // If this request fails, server-side refresh-token revocation is NOT guaranteed.
+      debugPrint(
+        'EnviroHub: Remote logout unavailable '
+        '(HTTP ${error.response?.statusCode ?? 'no response'}); clearing local session.',
+      );
     } finally {
       await _storage.clear();
     }
