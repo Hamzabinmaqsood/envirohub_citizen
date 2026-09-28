@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/formatters.dart';
 import '../../reports/data/report_repository.dart';
+import '../../reports/presentation/community_report_screen.dart';
 import '../../reports/presentation/report_detail_screen.dart';
 import '../data/notification_repository.dart';
 import '../models/app_notification.dart';
@@ -76,9 +77,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         onTap: () async {
                           if (!item.isRead) await widget.repository.markRead(item.id);
                           if (item.reportId != null && context.mounted) {
+                            final reportId = item.reportId!;
                             await Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ReportDetailScreen(repository: widget.reportRepository, reportId: item.reportId!),
+                              MaterialPageRoute<void>(
+                                builder: (_) => item.isCommunityReport
+                                    ? CommunityReportScreen(
+                                        repository: widget.reportRepository,
+                                        reportId: reportId,
+                                      )
+                                    : ReportDetailScreen(
+                                        repository: widget.reportRepository,
+                                        reportId: reportId,
+                                      ),
                               ),
                             );
                           }

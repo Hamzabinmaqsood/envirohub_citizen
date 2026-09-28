@@ -6,6 +6,7 @@ class AppNotification {
     required this.type,
     required this.isRead,
     required this.createdAt,
+    required this.isCommunityReport,
     this.reportId,
   });
 
@@ -15,6 +16,7 @@ class AppNotification {
   final String type;
   final bool isRead;
   final String createdAt;
+  final bool isCommunityReport;
   final String? reportId;
 
   factory AppNotification.fromJson(Map<String, dynamic> json) => AppNotification(
@@ -24,6 +26,7 @@ class AppNotification {
         type: json['notification_type']?.toString() ?? '',
         isRead: json['is_read'] == true,
         createdAt: json['created_at']?.toString() ?? '',
+        isCommunityReport: json['is_community_report'] == true,
         reportId: json['report_id']?.toString(),
       );
 }
