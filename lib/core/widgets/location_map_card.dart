@@ -58,7 +58,7 @@ class LocationMapCard extends StatelessWidget {
       children: [
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.envirohub_citizen',
+          userAgentPackageName: 'com.hamzabinmaqsood.envirohub',
         ),
         MarkerLayer(
           markers: [
