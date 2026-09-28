@@ -72,6 +72,24 @@ class ReportDetailScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Community engagement',
+                          style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 6),
+                      Text('${report.confirmationCount} confirmations • ${report.followerCount} followers'),
+                      const SizedBox(height: 4),
+                      Text('Your own report already receives your status updates.',
+                          style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               LocationMapCard(
                 latitude: report.latitude,
                 longitude: report.longitude,

@@ -11,6 +11,7 @@ import '../../../core/widgets/location_map_card.dart';
 import '../data/report_repository.dart';
 import '../models/category.dart';
 import '../models/nearby_report.dart';
+import 'community_report_screen.dart';
 
 class ReportIssueScreen extends StatefulWidget {
   const ReportIssueScreen({super.key, required this.repository});
@@ -170,6 +171,20 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
     } finally {
       if (mounted) setState(() => _nearbyLoading = false);
     }
+  }
+
+  Future<void> _openNearbyReport(NearbyReport report) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CommunityReportScreen(
+          repository: widget.repository,
+          reportId: report.id,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    final position = _position;
+    if (position != null) await _loadNearby(position);
   }
 
   void _changeCategory(ReportCategory? value) {
@@ -395,6 +410,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
                       loading: _nearbyLoading,
                       reports: _nearbyReports,
                       categoryName: _category?.name ?? 'similar',
+                      onOpenReport: _openNearbyReport,
                     ),
                     const SizedBox(height: 26),
                     FilledButton.icon(
@@ -419,11 +435,13 @@ class _NearbyReportsCard extends StatelessWidget {
     required this.loading,
     required this.reports,
     required this.categoryName,
+    required this.onOpenReport,
   });
 
   final bool loading;
   final List<NearbyReport> reports;
   final String categoryName;
+  final Future<void> Function(NearbyReport report) onOpenReport;
 
   @override
   Widget build(BuildContext context) {
@@ -480,19 +498,36 @@ class _NearbyReportsCard extends StatelessWidget {
             const Text('Similar open reports already exist close to this GPS point. You can still submit if this is a separate issue.'),
             const SizedBox(height: 10),
             ...reports.take(3).map(
-                  (report) => Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.near_me_outlined, size: 18),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${report.categoryName} • ${friendlyStatus(report.status)}',
+                  (report) => Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${report.categoryName} • ${friendlyStatus(report.status)} • ${report.distanceM} m',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                           ),
-                        ),
-                        Text('${report.distanceM} m'),
-                      ],
+                          const SizedBox(height: 6),
+                          Text('${report.confirmationCount} confirmations • ${report.followerCount} followers'),
+                          if (report.isConfirmed || report.isFollowing)
+                            Text(
+                              [
+                                if (report.isConfirmed) 'You confirmed this',
+                                if (report.isFollowing) 'Following',
+                              ].join(' • '),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton.icon(
+                              onPressed: () => onOpenReport(report),
+                              icon: const Icon(Icons.open_in_new, size: 18),
+                              label: const Text('View / confirm / follow'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

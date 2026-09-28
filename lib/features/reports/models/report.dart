@@ -85,11 +85,15 @@ class ReportDetail extends ReportSummary {
     required this.images,
     required this.timeline,
     this.resolvedAt,
+    this.confirmationCount = 0,
+    this.followerCount = 0,
   });
 
   final List<ReportImageItem> images;
   final List<ReportTimelineItem> timeline;
   final String? resolvedAt;
+  final int confirmationCount;
+  final int followerCount;
 
   factory ReportDetail.fromJson(Map<String, dynamic> json) {
     final summary = ReportSummary.fromJson(json);
@@ -113,6 +117,8 @@ class ReportDetail extends ReportSummary {
           .map((e) => ReportTimelineItem.fromJson(e.cast<String, dynamic>()))
           .toList(),
       resolvedAt: json['resolved_at']?.toString(),
+      confirmationCount: (json['confirmation_count'] as num?)?.toInt() ?? 0,
+      followerCount: (json['follower_count'] as num?)?.toInt() ?? 0,
     );
   }
 }

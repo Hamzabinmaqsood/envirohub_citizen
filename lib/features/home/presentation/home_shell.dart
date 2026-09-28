@@ -5,6 +5,7 @@ import '../../notifications/data/notification_repository.dart';
 import '../../notifications/presentation/notifications_screen.dart';
 import '../../reports/data/report_repository.dart';
 import '../../reports/presentation/my_reports_screen.dart';
+import '../../reports/presentation/following_reports_screen.dart';
 import '../../reports/presentation/report_issue_screen.dart';
 
 class HomeShell extends StatefulWidget {
@@ -34,6 +35,13 @@ class _HomeShellState extends State<HomeShell> {
         authController: widget.authController,
         reportRepository: widget.reportRepository,
         onOpenReports: () => setState(() => _index = 1),
+        onOpenFollowing: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => FollowingReportsScreen(repository: widget.reportRepository),
+            ),
+          );
+        },
         onReportCreated: () => setState(() => _refreshVersion++),
       ),
       MyReportsScreen(key: ValueKey('reports-$_refreshVersion'), repository: widget.reportRepository),
@@ -64,12 +72,14 @@ class _HomeDashboard extends StatelessWidget {
     required this.authController,
     required this.reportRepository,
     required this.onOpenReports,
+    required this.onOpenFollowing,
     required this.onReportCreated,
   });
 
   final AuthController authController;
   final ReportRepository reportRepository;
   final VoidCallback onOpenReports;
+  final VoidCallback onOpenFollowing;
   final VoidCallback onReportCreated;
 
   @override
@@ -120,10 +130,10 @@ class _HomeDashboard extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _QuickCard(
-                icon: Icons.recycling_outlined,
-                title: 'Impact',
-                subtitle: 'Coming next',
-                onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Community impact will be added after the core reporting flow.'))),
+                icon: Icons.bookmark_border,
+                title: 'Following',
+                subtitle: 'Saved issues',
+                onTap: onOpenFollowing,
               ),
             ),
           ],

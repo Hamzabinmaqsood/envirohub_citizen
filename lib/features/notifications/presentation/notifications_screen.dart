@@ -30,7 +30,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     _reload();
   }
 
-  void _reload() => _future = widget.repository.getNotifications();
+  void _reload() {
+    _future = widget.repository.getNotifications();
+  }
 
   @override
   Widget build(BuildContext context) {

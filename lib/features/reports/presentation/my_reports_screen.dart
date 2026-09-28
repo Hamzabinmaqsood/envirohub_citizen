@@ -24,7 +24,9 @@ class _MyReportsScreenState extends State<MyReportsScreen> {
     _reload();
   }
 
-  void _reload() => _future = widget.repository.getReports();
+  void _reload() {
+    _future = widget.repository.getReports();
+  }
 
   Future<void> _refresh() async {
     setState(_reload);
